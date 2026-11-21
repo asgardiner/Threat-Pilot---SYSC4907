@@ -7,3 +7,8 @@ npm install
 npm run dev     # blank page for now
 npm test
 ```
+```bash
+npm run lint
+npm run typecheck
+npm run build
+```
