@@ -25,10 +25,10 @@ const kernelRule = {
 };
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules', 'coverage'] },
-  js.configs.recommended,
-  ...tseslint.configs.recommended,
-  { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
-  { files: ['src/plugins/**/*.ts'], rules: { 'no-restricted-imports': ['error', pluginRule] } },
-  { files: ['src/kernel/**/*.ts'], rules: { 'no-restricted-imports': ['error', kernelRule] } },
+    { ignores: ['dist', 'node_modules', 'coverage'] },
+    js.configs.recommended,
+    ...tseslint.configs.recommended,
+    { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
+    { files: ['src/plugins/**/*.{ts,tsx}'], rules: { 'no-restricted-imports': ['error', pluginRule] } },
+    { files: ['src/kernel/**/*.{ts,tsx}'], rules: { 'no-restricted-imports': ['error', kernelRule] } },
 );
