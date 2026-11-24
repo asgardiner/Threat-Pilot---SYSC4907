@@ -27,7 +27,9 @@ body,
 .tp-skip-link {
   position: absolute;
   left: 0.75rem;
-  top: -100%;
+  top: 0.75rem;
+  /* Off-screen until focused. (top: -100% resolved to 0 inside the 0-height wrapper.) */
+  transform: translateY(-200%);
   padding: 0.5rem 0.75rem;
   background: #fff;
   color: #0b57d0;
@@ -37,7 +39,7 @@ body,
 }
 
 .tp-skip-link:focus {
-  top: 0.75rem;
+  transform: none;
 }
 
 .tp-header {

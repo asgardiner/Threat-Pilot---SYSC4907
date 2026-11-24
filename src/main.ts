@@ -89,7 +89,12 @@ async function registerDiagramSlot(): Promise<void> {
 }
 
 async function boot(): Promise<void> {
-    await registerDiagramSlot();
+    try {
+        await registerDiagramSlot();
+    } catch (err) {
+        // Still show the shell; the canvas slot falls back to its empty message.
+        console.error('Diagram plug-in failed to start', err);
+    }
 
     const root = document.getElementById('root');
     if (!root) throw new Error('#root is missing');

@@ -114,6 +114,36 @@ describe('mountShell', () => {
     });
 });
 
+describe('mountShell isolation', () => {
+    it('keeps mounting other slots when one contribution throws, and tolerates failing cleanups', () => {
+        document.body.innerHTML = '<div id="root"></div>';
+        const root = document.getElementById('root')!;
+        const okCleanup = vi.fn();
+        const slots = new SlotRegistry();
+        slots.add({ id: 'broken', slot: 'canvas', mount() { throw new Error('boom'); } });
+        slots.add({ id: 'bad-cleanup', slot: 'right-panel', mount() { return () => { throw new Error('cleanup boom'); }; } });
+        slots.add({ id: 'ok', slot: 'threats', mount(c) { c.textContent = 'threats-ok'; return okCleanup; } });
+        const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+        const unmount = mountShell(root, { slots, actions: stubActions() });
+        expect(root.querySelector('#diagram [role="alert"]')?.textContent).toContain('"broken" failed to load.');
+        expect(root.querySelector('#threats')?.textContent).toContain('threats-ok');
+
+        unmount();
+        expect(okCleanup).toHaveBeenCalledOnce();
+        expect(root.children.length).toBe(0);
+        error.mockRestore();
+    });
+
+    it('makes skip-link targets focusable', () => {
+        document.body.innerHTML = '<div id="root"></div>';
+        const root = document.getElementById('root')!;
+        mountShell(root, { slots: new SlotRegistry(), actions: stubActions() });
+        expect(root.querySelector('#diagram')?.getAttribute('tabindex')).toBe('-1');
+        expect(root.querySelector('#threats')?.getAttribute('tabindex')).toBe('-1');
+    });
+});
+
 describe('SlotRegistry', () => {
     it('rejects duplicate contribution ids', () => {
         const slots = new SlotRegistry();

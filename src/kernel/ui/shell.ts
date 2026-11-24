@@ -63,8 +63,16 @@ function mountSlot(
             'data-contribution': contribution.id,
         });
         host.append(mountPoint);
-        const cleanup = contribution.mount(mountPoint);
-        if (typeof cleanup === 'function') cleanups.push(cleanup);
+        try {
+            const cleanup = contribution.mount(mountPoint);
+            if (typeof cleanup === 'function') cleanups.push(cleanup);
+        } catch (err) {
+            // One broken plug-in must not take the whole shell down.
+            console.error(`Slot contribution "${contribution.id}" failed to mount`, err);
+            mountPoint.replaceChildren(
+                el('p', { className: 'tp-slot-empty', role: 'alert', textContent: `"${contribution.id}" failed to load.` }),
+            );
+        }
     }
 }
 
@@ -95,7 +103,7 @@ export function mountShell(root: HTMLElement, options: MountShellOptions): () =>
     const rightSlot = el('div', { className: 'tp-slot', 'data-slot': 'right-panel' });
     const threatsSlot = el('div', { className: 'tp-slot', 'data-slot': 'threats' });
 
-    const diagram = el('main', { id: 'diagram', className: 'tp-canvas', 'aria-label': 'Diagram' }, [
+    const diagram = el('main', { id: 'diagram', className: 'tp-canvas', 'aria-label': 'Diagram', tabindex: '-1' }, [
         canvasSlot,
     ]);
     const properties = el(
@@ -105,7 +113,7 @@ export function mountShell(root: HTMLElement, options: MountShellOptions): () =>
     );
     const threats = el(
         'section',
-        { id: 'threats', className: 'tp-threats', 'aria-label': 'Threats' },
+        { id: 'threats', className: 'tp-threats', 'aria-label': 'Threats', tabindex: '-1' },
         [threatsSlot],
     );
 
@@ -120,7 +128,11 @@ export function mountShell(root: HTMLElement, options: MountShellOptions): () =>
 
     return () => {
         for (const cleanup of cleanups.splice(0).reverse()) {
-            cleanup();
+            try {
+                cleanup();
+            } catch (err) {
+                console.error('Slot contribution cleanup failed', err);
+            }
         }
         root.replaceChildren();
     };
