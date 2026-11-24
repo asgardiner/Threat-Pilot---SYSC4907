@@ -12,6 +12,8 @@ export interface ShellActions {
 export interface MountShellOptions {
     slots: SlotRegistry;
     actions: ShellActions;
+    /** Optional status / error line shown under the toolbar (see `createNotice`). */
+    notice?: HTMLElement;
 }
 
 const EMPTY_MESSAGES: Record<SlotId, string> = {
@@ -81,7 +83,7 @@ function mountSlot(
  * Returns a function that unmounts contributions and clears the root.
  */
 export function mountShell(root: HTMLElement, options: MountShellOptions): () => void {
-    const { slots, actions } = options;
+    const { slots, actions, notice } = options;
     const cleanups: Array<() => void> = [];
 
     const skipLinks = el('nav', { className: 'tp-skip-links', 'aria-label': 'Skip links' }, [
@@ -97,7 +99,7 @@ export function mountShell(root: HTMLElement, options: MountShellOptions): () =>
         });
         toolbar.append(button);
     }
-    const header = el('header', { className: 'tp-header' }, [toolbar]);
+    const header = el('header', { className: 'tp-header' }, notice ? [toolbar, notice] : [toolbar]);
 
     const canvasSlot = el('div', { className: 'tp-slot', 'data-slot': 'canvas' });
     const rightSlot = el('div', { className: 'tp-slot', 'data-slot': 'right-panel' });
