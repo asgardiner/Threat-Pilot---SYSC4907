@@ -13,5 +13,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],
+    // Provides the browser APIs React Flow needs when a test opts into jsdom.
+    setupFiles: ['src/test/setup.ts'],
   },
 });

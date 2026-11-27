@@ -1,0 +1,1 @@
+export { DfdCanvasPlugin, createDfdCanvasPlugin } from './plugin';
