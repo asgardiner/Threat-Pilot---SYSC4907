@@ -27,7 +27,9 @@ body,
 .tp-skip-link {
   position: absolute;
   left: 0.75rem;
-  top: -100%;
+  top: 0.75rem;
+  /* Off-screen until focused. (top: -100% resolved to 0 inside the 0-height wrapper.) */
+  transform: translateY(-200%);
   padding: 0.5rem 0.75rem;
   background: #fff;
   color: #0b57d0;
@@ -37,7 +39,7 @@ body,
 }
 
 .tp-skip-link:focus {
-  top: 0.75rem;
+  transform: none;
 }
 
 .tp-header {
@@ -110,4 +112,29 @@ body,
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+.tp-notice p {
+  margin: 0;
+}
+.tp-notice-info:not(:empty),
+.tp-notice-error:has(p:not(:empty)) {
+  padding: 0.35rem 0.75rem;
+}
+.tp-notice-info {
+  color: #1e5e2e;
+}
+.tp-notice-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  color: #8b1a1a;
+  white-space: pre-line;
+}
+.tp-notice-error:has(p:not(:empty)) {
+  background: #fdecea;
+}
+.tp-notice-error button {
+  margin-left: auto;
+  font: inherit;
 }
